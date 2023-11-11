@@ -2,3 +2,11 @@
 title: "Untitled"
 output: github_document
 ---
+```{r}
+library(tidyverse)
+```
+```{r}
+homicide = read_csv('.\\data\\homicide-data.csv')
+```
+
+
