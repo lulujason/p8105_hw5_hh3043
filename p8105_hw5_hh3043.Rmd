@@ -4,9 +4,95 @@ output: github_document
 ---
 ```{r}
 library(tidyverse)
+
 ```
+
+There are 12 variables and 52179 observations.The disposition variable shows the result of the homicide case,such as open or closed. There are also variables showing the position of homicide such as city, state, lat, lon.Each observation is about the information of homicide case for one person. The are variables showing the information of the victim such as victim_first,victim_last,victim_age,victim_sex. 
+
 ```{r}
-homicide = read_csv('.\\data\\homicide-data.csv')
+homicide = read_csv('.\\data\\homicide-data.csv')|>
+
+  mutate(city_state = paste(city,state,sep = ', '))|>
+  group_by(city_state)|>
+  summarize(count = n(),
+
+            unresolved = sum(disposition %in% c('Closed without arrest','Open/No arrest')))
+
 ```
+
+The total number of homicide is `r sum(pull(homicide,count))`,the total number of unsolved homicides is `r sum(pull(homicide,unresolved)) `.
+
+```{r}
+baltimore = filter(homicide,city_state == 'Baltimore, MD')
+proportion = prop.test(pull(baltimore,unresolved),pull(baltimore,count))|>
+  broom::tidy()
+```
+
+```{r}
+stats = function(test){
+  tibble(
+    p_hat = coef(test)[2],
+    ci = coef(test)[1]
+  )
+  
+  
+}
+
+results = homicide|>
+  mutate(
+    estimate_df = 
+      map2(homicide$count, homicide$unresolved, \(n,q) broom::tidy(prop.test(q, n)))
+  )|>
+  unnest(cols = estimate_df)|>
+  select(city_state,estimate,conf.low,conf.high)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
