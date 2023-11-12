@@ -56,9 +56,10 @@ results = homicide|>
 # problem 2
 
 ```{r}
-file_names = tibble(
-  list.files('.\\data\\con_exp')
-)
+files = tibble(
+  file_names = list.files('.\\data\\con_exp')
+)|>
+  mutate(file_data = map(file_names, \(i) read_csv(file = str_c('.\\data\\con_exp\\', i ))))
 
 
 ```
