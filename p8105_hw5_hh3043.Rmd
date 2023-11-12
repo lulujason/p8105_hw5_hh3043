@@ -59,9 +59,18 @@ results = homicide|>
 files = tibble(
   file_names = list.files('.\\data\\con_exp')
 )|>
-  mutate(file_data = map(file_names, \(i) read_csv(file = str_c('.\\data\\con_exp\\', i ))))
+  mutate(file_data = map(file_names, \(i) read_csv(file = str_c('.\\data\\con_exp\\', i ))))|>
+  unnest(file_data)|>
+  mutate(file_names = str_replace(file_names,'.csv',''))
 
-
+files|>
+  pivot_longer(
+    week_1:week_8,
+    names_to = 'week',
+    values_to = 'value'
+  )|>
+  separate_wider_delim(file_names,delim = '_',names = c('arm','id'))
+  
 ```
 
 
