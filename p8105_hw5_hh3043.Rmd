@@ -4,7 +4,7 @@ output: github_document
 ---
 ```{r}
 library(tidyverse)
-
+set.seed(1)
 ```
 # problem 1
 There are 12 variables and 52179 observations.The disposition variable shows the result of the homicide case,such as open or closed. There are also variables showing the position of homicide such as city, state, lat, lon.Each observation is about the information of homicide case for one person. The are variables showing the information of the victim such as victim_first,victim_last,victim_age,victim_sex. 
@@ -15,7 +15,6 @@ homicide = read_csv('.\\data\\homicide-data.csv')|>
   mutate(city_state = paste(city,state,sep = ', '))|>
   group_by(city_state)|>
   summarize(count = n(),
-
             unresolved = sum(disposition %in% c('Closed without arrest','Open/No arrest')))
 
 ```
@@ -29,14 +28,10 @@ proportion = prop.test(pull(baltimore,unresolved),pull(baltimore,count))|>
 ```
 
 ```{r}
-stats = function(test){
-  tibble(
-    p_hat = coef(test)[2],
-    ci = coef(test)[1]
-  )
+
   
   
-}
+
 
 results = homicide|>
   mutate(
@@ -65,25 +60,76 @@ files = tibble(
   pivot_longer(
     week_1:week_8,
     names_to = 'week',
-    values_to = 'value'
+    values_to = 'observation'
   )|>
   mutate(
     arm = case_when(
     grepl('exp',file_names) ~ 'experimental',
     grepl('con',file_names) ~ 'control'
   ))|>
-  rename(subject_id = file_names)
+  rename(subject_id = file_names)|>
+  select(subject_id,arm,everything())
 
 files|>
-  select(subject_id,arm,everything())|>
   group_by(subject_id)|>
-  ggplot(aes(x = week,y = value,group = subject_id,color = arm)) +
+  ggplot(aes(x = week,y = observation,group = subject_id,color = arm)) +
   geom_point()+geom_line()
 
 ```
 
+From the plot, the observation values for experiment group is in a increasing trend through week 1 to week 8,but the trend for control group is relatively constant.
+
+# problem 3
 
 
+```{r}
+sim_t_test = function(mu,n=30,sigma = 5){
+  
+  sim_data = tibble(
+    x = rnorm(n,mu,sigma)
+  )
+  
+  t.test(pull(sim_data,x),alternative = 'two.sided',mu = 0, conf.level = 0.05)|>
+  broom::tidy()|>
+  select(estimate,p.value)|>
+  janitor::clean_names()
+
+}
+
+sim_mu_0_df = 
+    expand_grid(
+    mu = 0,
+    iter = 1:5000
+  )|>
+  mutate(
+     estimate_df = map(mu,sim_t_test)
+  )|>
+  unnest(estimate_df)
+
+sim_results_df = 
+  expand_grid(
+    mu = 1:6,
+    iter = 1:5000
+  )|>
+  mutate(
+    estimate_df = map(mu,sim_t_test)
+  )|>
+  unnest(estimate_df)
+
+sim_results_df = bind_rows(sim_results_df,sim_mu_0_df)
+
+
+sim_results_df|>
+  group_by(mu)|>
+  summarize(power = sum(p_value<0.05)/5000)|>
+  ggplot(aes(x=mu,y= power))+
+  geom_point()+geom_line()
+
+
+
+```
+
+According to the plot, the power of t_test increase, as the true mean increase. Since the null hypothesis is fixed, the increase of true mean causes the increase of effect size.Thus, we can conclude that as the effect size increases, the power will also increase.
 
 
 
