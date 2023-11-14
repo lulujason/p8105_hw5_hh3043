@@ -41,6 +41,12 @@ results = homicide|>
   unnest(cols = estimate_df)|>
   select(city_state,estimate,conf.low,conf.high)
 
+results |>
+  ggplot(aes(city_state,estimate))+
+  geom_point(aes(x=city_state,y = estimate))+
+  geom_errorbar(aes(ymin = conf.low,ymax = conf.high),width = 0.2)+
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
 ```
 
 
@@ -99,7 +105,7 @@ sim_t_test = function(mu,n=30,sigma = 5){
 sim_mu_0_df = 
     expand_grid(
     mu = 0,
-    iter = 1:5000
+    iter = 1:500
   )|>
   mutate(
      estimate_df = map(mu,sim_t_test)
@@ -109,7 +115,7 @@ sim_mu_0_df =
 sim_results_df = 
   expand_grid(
     mu = 1:6,
-    iter = 1:5000
+    iter = 1:500
   )|>
   mutate(
     estimate_df = map(mu,sim_t_test)
@@ -121,7 +127,7 @@ sim_results_df = bind_rows(sim_results_df,sim_mu_0_df)
 
 sim_results_df|>
   group_by(mu)|>
-  summarize(power = sum(p_value<0.05)/5000)|>
+  summarize(power = sum(p_value<0.05)/500)|>
   ggplot(aes(x=mu,y= power))+
   geom_point()+geom_line()
 
@@ -133,8 +139,23 @@ According to the plot, the power of t_test increase, as the true mean increase. 
 
 
 
+```{r}
+sim_results_df|>
+  group_by(mu)|>
+  summarize(estimate_ave = mean(estimate))|>
+  ggplot(aes(x=mu,y=estimate_ave))+
+  geom_point()+geom_line()
 
+sim_results_df|>
+  filter(p_value < 0.05)|>
+  group_by(mu)|>
+  summarize(estimate_ave = mean(estimate))|>
+  ggplot(aes(x=mu,y=estimate_ave))+
+  geom_point()+geom_line()
+  
+```
 
+according to the plot, the sample average of μ hat across tests for which the null is rejected approximately equal to the true value of μ. It is because that these rejected μ hat distribute symmetrically about the true μ value.
 
 
 
