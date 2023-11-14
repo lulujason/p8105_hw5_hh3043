@@ -21,13 +21,13 @@ homicide = read_csv('.\\data\\homicide-data.csv')|>
 
 The total number of homicide is `r sum(pull(homicide,count))`,the total number of unsolved homicides is `r sum(pull(homicide,unresolved)) `.
 
-```{r}
+```{r warning = FALSE}
 baltimore = filter(homicide,city_state == 'Baltimore, MD')
 proportion = prop.test(pull(baltimore,unresolved),pull(baltimore,count))|>
   broom::tidy()
 ```
 
-```{r}
+```{r warning = FALSE}
 
   
   
@@ -56,7 +56,7 @@ results |>
 
 # problem 2
 
-```{r}
+```{r warning = FALSE}
 files = tibble(
   file_names = list.files('.\\data\\con_exp')
 )|>
@@ -105,7 +105,7 @@ sim_t_test = function(mu,n=30,sigma = 5){
 sim_mu_0_df = 
     expand_grid(
     mu = 0,
-    iter = 1:500
+    iter = 1:5000
   )|>
   mutate(
      estimate_df = map(mu,sim_t_test)
@@ -115,7 +115,7 @@ sim_mu_0_df =
 sim_results_df = 
   expand_grid(
     mu = 1:6,
-    iter = 1:500
+    iter = 1:5000
   )|>
   mutate(
     estimate_df = map(mu,sim_t_test)
@@ -127,7 +127,7 @@ sim_results_df = bind_rows(sim_results_df,sim_mu_0_df)
 
 sim_results_df|>
   group_by(mu)|>
-  summarize(power = sum(p_value<0.05)/500)|>
+  summarize(power = sum(p_value<0.05)/5000)|>
   ggplot(aes(x=mu,y= power))+
   geom_point()+geom_line()
 
