@@ -2,14 +2,14 @@
 title: "Untitled"
 output: github_document
 ---
-```{r}
+```{r message}
 library(tidyverse)
-set.seed(1)
+set.seed(35)
 ```
 # problem 1
 There are 12 variables and 52179 observations.The disposition variable shows the result of the homicide case,such as open or closed. There are also variables showing the position of homicide such as city, state, lat, lon.Each observation is about the information of homicide case for one person. The are variables showing the information of the victim such as victim_first,victim_last,victim_age,victim_sex. 
 
-```{r}
+```{r message = FALSE}
 homicide = read_csv('.\\data\\homicide-data.csv')|>
 
   mutate(city_state = paste(city,state,sep = ', '))|>
@@ -21,13 +21,13 @@ homicide = read_csv('.\\data\\homicide-data.csv')|>
 
 The total number of homicide is `r sum(pull(homicide,count))`,the total number of unsolved homicides is `r sum(pull(homicide,unresolved)) `.
 
-```{r warning = FALSE}
+```{r message = FALSE,warning = FALSE}
 baltimore = filter(homicide,city_state == 'Baltimore, MD')
 proportion = prop.test(pull(baltimore,unresolved),pull(baltimore,count))|>
   broom::tidy()
 ```
 
-```{r warning = FALSE}
+```{r message = FALSE,warning = FALSE}
 
   
   
@@ -56,7 +56,7 @@ results |>
 
 # problem 2
 
-```{r warning = FALSE}
+```{r message = FALSE,warning = FALSE}
 files = tibble(
   file_names = list.files('.\\data\\con_exp')
 )|>
