@@ -160,7 +160,7 @@ sim_results_df|>
 
 
 
-according to the plot, In general,the sample average of μ hat across tests for which the null is rejected approximately equal to the true value of μ for larger mu value and 0 mu value,and it is less approximate for small value such as 1 and 2.
+according to the plot, In general,the sample average of μ hat across tests for which the null is rejected approximately equal to the true value of μ for larger mu value and 0 mu value,and it is less or not approximate for small values such as 1 and 2.
 It is because when true mean is small, the effect size is small. Then the power is less. Thus relatively large mu hat will be out of the confidence interval. For larger mu, the effect size and power will be larger, then there are more samples with rejected null. The higher the proportion of these samples in the whole sample, the more approximate of these mu hat to the true mean.
 For mu value 0 ,mu hat is approximate to the true mean because the null hypothesis of value of mean is equal to true mean,then the samples with rejected null are distributed symmetrically.
 
