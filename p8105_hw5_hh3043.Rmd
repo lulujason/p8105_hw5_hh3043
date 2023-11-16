@@ -85,7 +85,7 @@ files|>
 
 ```
 
-From the plot, the observation values for experiment group is in a increasing trend through week 1 to week 8,but the trend for control group is relatively constant.
+From the plot, the observation values for experiment group is in a increasing trend through week 1 to week 8,but the control group is relatively constant.
 
 # problem 3
 
@@ -144,15 +144,15 @@ According to the plot, the power of t_test increase, as the true mean increase. 
 ```{r}
 sim_results_df|>
   group_by(mu)|>
-  summarize(estimate_ave = mean(estimate))|>
-  ggplot(aes(x=mu,y=estimate_ave))+
+  summarize(mu_hat = mean(estimate))|>
+  ggplot(aes(x=mu,y=mu_hat))+
   geom_point()+geom_line()
 
 sim_results_df|>
   filter(p_value < 0.05)|>
   group_by(mu)|>
-  summarize(estimate_ave = mean(estimate))|>
-  ggplot(aes(x=mu,y=estimate_ave))+
+  summarize(mu_hat = mean(estimate))|>
+  ggplot(aes(x=mu,y=mu_hat))+
   geom_point()+geom_line()
   
 ```
